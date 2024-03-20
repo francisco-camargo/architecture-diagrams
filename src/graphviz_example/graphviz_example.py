@@ -1,7 +1,12 @@
+'''
+Example of using graphviz library
+'''
+
 import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz-10.0.1-win64/bin'
 
 import graphviz
+
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz-10.0.1-win64/bin'
 
 dot = graphviz.Digraph(comment='The Round Table')
 
