@@ -14,7 +14,8 @@ from diagrams.aws.ml import Sagemaker
 from diagrams.aws.storage import S3
 from diagrams.onprem.client import Client
 
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz-10.0.1-win64/bin'
+# os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz-10.0.1-win64/bin'
+os.environ["PATH"] += os.pathsep + 'C:/Users/nxf88571/Documents/Graphviz-10.0.1-win64/bin'
 
 path = 'src/sagemaker_pipeline/'
 filename = 'user_experience'
@@ -31,10 +32,10 @@ with Diagram(
     curvestyle='curved',
 ):
 
-    user = Client('User')
+    user = Client('End-User')
     input = S3('Input Data')
     gui = Sagemaker('GUI')
-    ml_pipeline = Sagemaker('ML Pipeline')
+    ml_pipeline = Sagemaker('SageMaker Pipeline')
     output = S3('Results')
 
     user >> input >> ml_pipeline >> output
