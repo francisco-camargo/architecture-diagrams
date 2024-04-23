@@ -36,8 +36,13 @@ with Diagram(
 ):
 
     user = Client('Developer')
-    input = S3('Input Data')
+    # input = S3('Input Data')
     codecommit = Codecommit('CodeCommit')
+
+    with Cluster('ML Pipeline'):
+        input = S3('Input Data')
+        sm = Sagemaker('SageMaker Pipeline')
+        output = S3('Results')
 
     with Cluster('CI/CD'):
         codepipeline = Codepipeline('CodePipeline')
@@ -46,9 +51,9 @@ with Diagram(
         (codepipeline >> Edge() << pull_code)
         codepipeline >> codebuild
 
-    sm = Sagemaker('SageMaker Pipeline')
+    # sm = Sagemaker('SageMaker Pipeline')
     sm_logs = Sagemaker('SM Logs')
-    output = S3('Results')
+    # output = S3('Results')
 
     user >> codecommit >> codepipeline
     user >> input >> sm >> output

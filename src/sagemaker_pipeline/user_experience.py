@@ -9,7 +9,8 @@
 
 import os
 
-from diagrams import Diagram
+
+from diagrams import Cluster, Diagram, Edge
 from diagrams.aws.ml import Sagemaker
 from diagrams.aws.storage import S3
 from diagrams.onprem.client import Client
@@ -33,10 +34,13 @@ with Diagram(
 ):
 
     user = Client('End-User')
-    input = S3('Input Data')
+
+    with Cluster('ML Pipeline'):
+        input = S3('Input Data')
+        ml_pipeline = Sagemaker('SageMaker Pipeline')
+        output = S3('Results')
+
     gui = Sagemaker('GUI')
-    ml_pipeline = Sagemaker('SageMaker Pipeline')
-    output = S3('Results')
 
     user >> input >> ml_pipeline >> output
     user >> gui >> ml_pipeline
