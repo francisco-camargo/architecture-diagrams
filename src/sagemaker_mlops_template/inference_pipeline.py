@@ -21,7 +21,7 @@ from diagrams.aws.integration import Eventbridge
 os.environ["PATH"] += os.pathsep + 'C:/Users/nxf88571/Documents/Graphviz-10.0.1-win64/bin'
 
 path = 'src/sagemaker_mlops_template/'
-filename = 'dev_experience'
+filename = 'inference_experience'
 filepath = path + filename
 graph_attr = {
     'pad': '0.2',
@@ -36,35 +36,16 @@ with Diagram(
     curvestyle='curved',
 ):
 
-    user = Client('Developer')
-    codecommit = Codecommit('CodeCommit')
-    user >> codecommit
+    user = Client('End-User')
+    eventbridge = Eventbridge('Detect New Data')
 
     with Cluster('CI/CD'):
         codepipeline = Codepipeline('CodePipeline')
-        pull_code = Codecommit('CodeCommit')
-        training_codebuild = Codebuild('Training CodeBuild')
-        test_codebuild = Codebuild('Test CodeBuild')
-        codepipeline << pull_code
-        codepipeline >> test_codebuild
-        test_codebuild >> training_codebuild
-
         inference_codebuild = Codebuild('Inference CodeBuild')
-    codecommit >> codepipeline
+        codepipeline >> inference_codebuild
+    eventbridge >> codepipeline
     cloudwatch_logs = Cloudwatch('Logs')
-    training_codebuild >> cloudwatch_logs
 
-    with Cluster('Training Pipeline'):
-        training_data = S3('Training Data')
-        user >> training_data
-        training_sagemaker = Sagemaker('Training Pipeline')
-        training_logs = Sagemaker('Training Logs')
-        training_sagemaker >> training_logs
-    training_data >> training_sagemaker
-    training_codebuild >> Edge() << training_sagemaker
-
-    # eventbridge = Eventbridge('Detect New Data')
-    # inference_data >> eventbridge
     with Cluster('Inference Pipeline'):
         inference_data = S3('Inference Data')
         inference_sagemaker = Sagemaker('Inference Pipeline')
@@ -72,8 +53,8 @@ with Diagram(
         user >> inference_data
         inference_codebuild >> Edge() << inference_sagemaker
         inference_sagemaker >> inference_logs
-    training_codebuild >> inference_codebuild
     inference_codebuild >> cloudwatch_logs
+    inference_data << eventbridge # TODO: direction is bugged here...
 
     with Cluster('ML Artifacts'):
         model_registry = Sagemaker('Model Registry')
@@ -82,14 +63,8 @@ with Diagram(
         model_registry >> Edge(style='invis') >> pre_artifact
         pre_artifact >> Edge(style='invis') >> model_artifact
 
-        training_sagemaker >> Edge(style='bold', color='orange') >> model_registry
-        # model_registry >> pre_artifact
-        # model_registry >> model_artifact
     model_artifact >> Edge(style='bold', color='orange') >> inference_sagemaker
 
     inference_results = S3('Inference Results')
     inference_sagemaker >> inference_results
     inference_data >> inference_sagemaker
-    # eventbridge >> inference_sagemaker
-    # pre_artifact >> inference_sagemaker
-    # model_artifact >> inference_sagemaker
