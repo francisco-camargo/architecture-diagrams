@@ -28,8 +28,7 @@ graph_attr = {
 }
 
 with Diagram(
-    # name='Developer Experience',
-    name='',
+    name='Single Account Inference Pipeline',
     filename=filepath,
     show=False,
     graph_attr=graph_attr,
